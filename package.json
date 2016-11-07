@@ -10,7 +10,8 @@
     "test": "nyc ava",
     "test-watch": "npm test -- --watch",
     "build": "babel lib/express-redis-rate-limiter.js --out-file lib/index.js",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "coverage": "nyc ava report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",

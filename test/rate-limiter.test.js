@@ -47,6 +47,23 @@ const expressFactory = () => {
   return temp
 }
 
+test.cb('rate limiting a user successfully after one requests', t => {
+  const genedApp = expressFactory()
+  const smallTotalConfigs = Object.assign({}, defaultConfigs)
+  smallTotalConfigs.total = 0
+  genedApp.use(rateLimiter(smallTotalConfigs, redis))
+  const persistedRequest = Object.assign({}, requestBody)
+
+  request(genedApp)
+  .post(path)
+  .send(persistedRequest)
+  .expect(429)
+  .end( (err, res) => {
+    if (err) throw err
+    t.end()
+  })
+})
+
 test.cb('rate limiting a user successfully after two requests', t => {
   const genedApp = expressFactory()
   const smallTotalConfigs = Object.assign({}, defaultConfigs)
@@ -157,5 +174,44 @@ test.cb('limits based on a custom stored key aka genStored', t => {
           t.end()
       })
     })
+  })
+})
+
+test.serial.cb('Calls the error function on a redis exec error', t => {
+  const multi = redis.multi()
+  const execStub = sinon.stub(multi, 'exec')
+  execStub.yields(new Error('Faking an error'))
+  const redisStub = sinon.stub(redis, 'multi', () => multi)
+  app.use(rateLimiter(defaultConfigs, redis))
+
+  request(app)
+  .post(path)
+  .send(requestBody)
+  .expect(500)
+  .end( (err, res) => {
+    if (err) throw err
+    redisStub.restore()
+    execStub.restore()
+    t.end()
+  })
+})
+
+test.serial.cb('Calls the error function on a second redis exec error', t => {
+  const multi = redis.multi()
+  const execStub = sinon.stub(multi, 'exec')
+  execStub.onFirstCall().yields(null, ['4'])
+  .onSecondCall().yields(new Error('Faking an error'))
+  const redisStub = sinon.stub(redis, 'multi', () => multi)
+  app.use(rateLimiter(defaultConfigs, redis))
+
+  request(app)
+  .post(path)
+  .send(requestBody)
+  .expect(500)
+  .end( (err, res) => {
+    if (err) throw err
+    redisStub.restore()
+    execStub.restore()
+    t.end()
   })
 })

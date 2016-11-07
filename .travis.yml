@@ -8,3 +8,5 @@ matrix:
 
 notifications:
   email: false
+
+after_success: npm run coverage
