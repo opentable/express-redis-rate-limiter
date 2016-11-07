@@ -45,6 +45,7 @@
     "lodash": "^4.16.6",
     "nyc": "^8.4.0",
     "redis-js": "^0.1.2",
+    "sinon": "^1.17.6",
     "supertest": "^2.0.1"
   },
   "dependencies": {
@@ -58,11 +59,6 @@
   "babel": {
     "presets": [
       "es2015"
-    ],
-    "env": {
-      "development": {
-        "sourceMaps": "inline"
-      }
-    }
+    ]
   }
 }

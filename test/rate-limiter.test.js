@@ -2,6 +2,7 @@ import test from 'ava'
 import express from 'express'
 import bodyParser from 'body-parser'
 import request from 'supertest'
+import sinon from 'sinon'
 import redis from 'redis-js'
 // import client from 'redis'
 import faker from 'faker'
@@ -24,7 +25,7 @@ const defaultConfigs = {
   genStored: req => { return {} },
   decrementAmount: (req, redisInfo) => 1,
   onRateLimited: (req, res, next) => res.sendStatus(429),
-  onError: (err, req, res, next) => res.sendStatus(200),
+  onError: (err, req, res, next) => res.sendStatus(500),
   onPassThrough: res => res.sendStatus(200)
 }
 
@@ -39,23 +40,27 @@ test.beforeEach(t => {
   app.use(bodyParser.json())
 })
 
+const expressFactory = () => {
+  const temp = express()
+  temp.use(bodyParser.urlencoded({ extended: false }))
+  temp.use(bodyParser.json())
+  return temp
+}
+
 test.cb('rate limiting a user successfully after two requests', t => {
-  const app2 = express() //this is needed since superTest acts against the express app
-  //in this case there is a race condition for the shared app
-  app2.use(bodyParser.urlencoded({ extended: false }))
-  app2.use(bodyParser.json())
+  const genedApp = expressFactory()
   const smallTotalConfigs = Object.assign({}, defaultConfigs)
   smallTotalConfigs.total = 1
-  app2.use(rateLimiter(smallTotalConfigs, redis))
+  genedApp.use(rateLimiter(smallTotalConfigs, redis))
   const persistedRequest = Object.assign({}, requestBody)
 
-  request(app2)
+  request(genedApp)
   .post(path)
   .send(persistedRequest)
   .expect(200)
   .end( (err, res) => {
     if (err) throw err
-    request(app2)
+    request(genedApp)
     .post(path)
     .send(persistedRequest)
     .expect(429)
@@ -67,21 +72,18 @@ test.cb('rate limiting a user successfully after two requests', t => {
 })
 
 test.cb('letting a user through after two requests', t => {
-  const app2 = express() //this is needed since superTest acts against the express app
-  //in this case there is a race condition for the shared app
-  app2.use(bodyParser.urlencoded({ extended: false }))
-  app2.use(bodyParser.json())
+  const genedApp = expressFactory()
   const copyConfigs = Object.assign({}, defaultConfigs)
-  app2.use(rateLimiter(copyConfigs, redis))
+  genedApp.use(rateLimiter(copyConfigs, redis))
   const persistedRequest = Object.assign({}, requestBody)
 
-  request(app2)
+  request(genedApp)
   .post(path)
   .send(persistedRequest)
   .expect(200)
   .end( (err, res) => {
     if (err) throw err
-    request(app2)
+    request(genedApp)
     .post(path)
     .send(persistedRequest)
     .expect(200)
