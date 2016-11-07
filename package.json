@@ -15,10 +15,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/opentable/express-redis-rate-limiter"
+    "url": "https://github.com/opentable/redis-express-rate-limiter"
   },
   "bugs": {
-    "url": "https://github.com/opentable/express-redis-rate-limiter/issues"
+    "url": "https://github.com/opentable/redis-express-rate-limiter/issues"
   },
   "keywords": [
     "express",
