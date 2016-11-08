@@ -1,6 +1,6 @@
 {
   "name": "redis-express-rate-limiter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An redis and express based rate limiter to use on API endpoints to limit the number of requests based on custom logic for a set duration",
   "main": "lib/index.js",
   "directories": {
@@ -43,7 +43,6 @@
     "body-parser": "^1.15.2",
     "coveralls": "^2.11.14",
     "faker": "^3.1.0",
-    "lodash": "^4.16.6",
     "nyc": "^8.4.0",
     "redis-js": "^0.1.2",
     "sinon": "^1.17.6",

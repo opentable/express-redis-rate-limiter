@@ -6,7 +6,7 @@ import sinon from 'sinon'
 import redis from 'redis-js'
 // import client from 'redis'
 import faker from 'faker'
-import rateLimiter from '../lib/express-redis-rate-limiter'
+import rateLimiter from '../lib/redis-express-rate-limiter'
 
 // let redis = client.createClient()
 let app
