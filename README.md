@@ -34,7 +34,7 @@ const limiterConfigs = {
   onPassThrough: res => res.sendStatus(200)
 }
 
-app.use(rateLimiter(limiterConfigs, client)); //you can also use many limiters each for a different route!
+app.use(rateLimiter(limiterConfigs, client)) //you can also use many limiters each for a different route!
 
 app.post('/forgot-password', (req, res) => {
   res.sendStatus(200)
@@ -75,9 +75,8 @@ limiterConfigs = {
 limiterConfigs = {
   path: '*',
   method: 'all',
-  lookup: 'connection.remoteAddress'
   ...
-  limitBy: 'headers.x-forwarded-for'
+  limitBy: 'connection.remoteAddress'
   ...
 }
 

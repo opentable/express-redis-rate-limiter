@@ -1,7 +1,7 @@
 {
   "name": "redis-express-rate-limiter",
-  "version": "1.0.2",
-  "description": "An redis and express based rate limiter to use on API endpoints to limit the number of requests based on custom logic for a set duration",
+  "version": "1.0.3",
+  "description": "A redis and express based rate limiter to use on API endpoints to limit the number of requests based on custom logic for a set duration",
   "main": "lib/index.js",
   "directories": {
     "test": "test"
@@ -10,7 +10,8 @@
     "test": "nyc ava",
     "test-watch": "npm test -- --watch",
     "build": "babel lib/redis-express-rate-limiter.js --out-file lib/index.js",
-    "prepublish": "npm run build",
+    "preversion": "npm test",
+    "prepublish": "npm test && npm run build",
     "coverage": "nyc ava report --reporter=text-lcov | coveralls"
   },
   "repository": {
