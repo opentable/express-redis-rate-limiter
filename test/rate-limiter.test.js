@@ -111,6 +111,23 @@ test.cb('letting a user through after two requests', t => {
   })
 })
 
+test.cb('letting a user through with no genStored option', t => {
+  const genedApp = expressFactory()
+  const copyConfigs = Object.assign({}, defaultConfigs)
+  delete copyConfigs.genStored
+  genedApp.use(rateLimiter(copyConfigs, redis))
+  const persistedRequest = Object.assign({}, requestBody)
+
+  request(genedApp)
+  .post(path)
+  .send(persistedRequest)
+  .expect(200)
+  .end( (err, res) => {
+    if (err) throw err
+    t.end()
+  })
+})
+
 test.cb('lets a whitelisted user through writing a key', t => {
   const whitelistConfigs = Object.assign({}, defaultConfigs)
   whitelistConfigs.decrementAmount = (req, redisInfo) => 0
